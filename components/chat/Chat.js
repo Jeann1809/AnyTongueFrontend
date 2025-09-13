@@ -20,8 +20,10 @@ export default function Chat() {
     error,
     hasMore,
     sending,
+    messagesEndRef,
     loadMoreMessages,
     sendMessage,
+    scrollToBottom,
     setError
   } = useMessages(selectedChat?.id)
 
@@ -147,6 +149,9 @@ export default function Chat() {
                 )
               })
             )}
+            
+            {/* Scroll anchor for auto-scroll */}
+            <div ref={messagesEndRef} />
           </>
         )}
       </div>

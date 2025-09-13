@@ -13,10 +13,19 @@ export const useMessages = (chatId) => {
   const [hasMore, setHasMore] = useState(true)
   const [sending, setSending] = useState(false)
   
-  // messagesEndRef removed - no auto-scrolling
+  const messagesEndRef = useRef(null)
   const isLoadingMoreRef = useRef(false)
 
-  // Scroll function removed - no auto-scrolling
+  // Scroll to bottom function
+  const scrollToBottom = useCallback(() => {
+    console.log('scrollToBottom called, messagesEndRef:', messagesEndRef.current)
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+      console.log('Scrolled to bottom')
+    } else {
+      console.log('messagesEndRef is null, cannot scroll')
+    }
+  }, [])
 
   // Load initial messages
   const loadMessages = useCallback(async (currentChatId, showLoading = true) => {
@@ -44,6 +53,15 @@ export const useMessages = (chatId) => {
         console.log('loadMessages: transformed messages:', transformedMessages)
         setMessages(transformedMessages)
         setHasMore(result.hasMore)
+        
+        // Auto-scroll to bottom after messages are loaded (only on initial load)
+        if (showLoading) {
+          console.log('loadMessages: scheduling scroll to bottom after loading')
+          setTimeout(() => {
+            console.log('loadMessages: executing scroll to bottom')
+            scrollToBottom()
+          }, 100) // Delay to ensure DOM is updated
+        }
       } else {
         console.log('loadMessages: result not successful:', result.error)
         setError(result.error)
@@ -105,7 +123,11 @@ export const useMessages = (chatId) => {
     }
 
     setMessages(prev => [...prev, tempMessage])
-    scrollToBottom()
+    
+    // Auto-scroll to bottom when sending a message
+    setTimeout(() => {
+      scrollToBottom()
+    }, 50)
 
     try {
       const result = await messageService.sendMessage(chatId, text.trim())
@@ -141,6 +163,11 @@ export const useMessages = (chatId) => {
       // Check if message already exists (avoid duplicates)
       const exists = prev.some(msg => msg.id === transformedMessage.id)
       if (exists) return prev
+      
+      // Auto-scroll to bottom when receiving a new message
+      setTimeout(() => {
+        scrollToBottom()
+      }, 50)
       
       return [...prev, transformedMessage]
     })
@@ -207,9 +234,11 @@ export const useMessages = (chatId) => {
     error,
     hasMore,
     sending,
+    messagesEndRef,
     loadMessages,
     loadMoreMessages,
     sendMessage,
+    scrollToBottom,
     setError
   }
 }
