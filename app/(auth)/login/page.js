@@ -26,14 +26,9 @@ export default function LoginPage() {
     try {
       const response = await authAPI.login(formData)
       
-      console.log('Login response:', response) // Debug log
-      
       // Ensure token is stored (backup in case API function didn't store it)
       if (response.data && response.data.token) {
         localStorage.setItem('anytongue_token', response.data.token)
-        console.log('Token stored in login page:', response.data.token.substring(0, 20) + '...')
-      } else {
-        console.warn('No token in login response:', response)
       }
       
       // Store user data and authentication state - user is nested in data.data.user
@@ -48,9 +43,7 @@ export default function LoginPage() {
           updatedAt: response.data.user.updatedAt
         }
         localStorage.setItem('anytongue_user', JSON.stringify(userData))
-        console.log('User data stored:', userData)
       } else {
-        console.warn('No user data in login response:', response)
         // Fallback: create basic user data
         const basicUser = {
           email: formData.email,
@@ -61,13 +54,6 @@ export default function LoginPage() {
       }
       
       localStorage.setItem('anytongue_isLoggedIn', 'true')
-      
-      // Verify localStorage was set
-      console.log('LocalStorage after login:', {
-        user: localStorage.getItem('anytongue_user'),
-        isLoggedIn: localStorage.getItem('anytongue_isLoggedIn'),
-        token: localStorage.getItem('anytongue_token') ? 'Token present' : 'No token'
-      })
       
       // Show success message
       setSuccessMessage('Login successful! Redirecting to home page...')

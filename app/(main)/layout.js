@@ -66,7 +66,6 @@ export default function MainLayout({ children }) {
     
     setIsLoadingChats(true)
     try {
-      console.log('Loading chats for user:', userId)
       const response = await chatAPI.getUserChats(userId)
       
       if (response.success && response.data) {
@@ -87,7 +86,6 @@ export default function MainLayout({ children }) {
         })
         
         setChats(transformedChats)
-        console.log('Loaded chats:', transformedChats)
       }
     } catch (error) {
       console.error('Error loading chats:', error)
@@ -100,7 +98,6 @@ export default function MainLayout({ children }) {
   // Create a new chat with another user
   const createChatWithUser = async (otherUserId) => {
     try {
-      console.log('Creating chat with user:', otherUserId)
       const response = await chatAPI.createChat(otherUserId)
       
       if (response.success && response.data) {
@@ -120,7 +117,6 @@ export default function MainLayout({ children }) {
         
         setChats(prev => [newChat, ...prev])
         setSelectedChat(newChat)
-        console.log('Created new chat:', newChat)
         return newChat
       }
     } catch (error) {
@@ -131,25 +127,13 @@ export default function MainLayout({ children }) {
 
   // Simple authentication check
   useEffect(() => {
-    console.log('Main layout auth check running...')
-    
     const savedUser = localStorage.getItem('anytongue_user')
     const isLoggedIn = localStorage.getItem('anytongue_isLoggedIn')
-    const token = getCurrentToken()
-    
-    console.log('Auth check values:', {
-      savedUser: savedUser ? 'User data present' : 'No user data',
-      isLoggedIn,
-      token: token ? 'Token present' : 'No token',
-      pathname: window.location.pathname,
-      isAuthenticated: isAuthenticated()
-    })
     
     // Check if user is properly authenticated with token
     if (isAuthenticated() && savedUser && savedUser !== 'undefined' && savedUser !== 'null') {
       try {
         const userData = JSON.parse(savedUser)
-        console.log('Parsed user data:', userData)
         setUser(userData)
         
         // Load user chats after setting user data
@@ -158,14 +142,12 @@ export default function MainLayout({ children }) {
         }
       } catch (error) {
         console.error('Error parsing user data:', error)
-        console.log('Clearing invalid auth data and redirecting to login')
         localStorage.removeItem('anytongue_user')
         localStorage.removeItem('anytongue_isLoggedIn')
         localStorage.removeItem('anytongue_token')
         router.replace('/login')
       }
     } else {
-      console.log('No valid auth data found, redirecting to login')
       // Only redirect if we're not already on login page
       if (window.location.pathname !== '/login') {
         router.replace('/login')

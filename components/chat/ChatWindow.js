@@ -23,7 +23,6 @@ export default function ChatWindow() {
       
       setIsLoadingMessages(true)
       try {
-        console.log('Loading messages for chat:', selectedChat.id)
         const response = await chatAPI.getMessages(selectedChat.id)
         
         if (response.success && response.data) {
@@ -38,7 +37,6 @@ export default function ChatWindow() {
             senderId: msg.sender?._id
           }))
           
-          console.log('Loaded messages:', transformedMessages)
           // Update messages in context
           setChatMessages(selectedChat.id, transformedMessages)
         }

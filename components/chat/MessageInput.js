@@ -56,14 +56,11 @@ export default function MessageInput({ chatId }) {
     addMessage(chatId, tempMessage)
 
     try {
-      console.log('Sending message:', { chatId, text: messageText })
       const response = await chatAPI.sendMessage({
         chatId: chatId,
         text: messageText,
         messageType: 'text'
       })
-
-      console.log('Message sent successfully:', response)
 
       // Replace temp message with real message from server
       if (response.success && response.data) {
@@ -81,29 +78,20 @@ export default function MessageInput({ chatId }) {
 
         // Replace temp message with real message
         const currentMessages = messages[chatId] || []
-        console.log('Current messages before replacement:', currentMessages)
-        console.log('Looking for temp message ID:', tempMessage.id)
-        
         const tempMessageIndex = currentMessages.findIndex(msg => msg.id === tempMessage.id)
-        console.log('Temp message index:', tempMessageIndex)
         
         let updatedMessages
         if (tempMessageIndex !== -1) {
           // Replace the temp message
           updatedMessages = [...currentMessages]
           updatedMessages[tempMessageIndex] = realMessage
-          console.log('Replaced temp message at index:', tempMessageIndex)
         } else {
           // If temp message not found, just add the real message
           updatedMessages = [...currentMessages, realMessage]
-          console.log('Temp message not found, added real message to end')
         }
         
         setChatMessages(chatId, updatedMessages)
-        console.log('Updated messages:', updatedMessages)
-        console.log('Message updated successfully:', realMessage)
       } else {
-        console.warn('Unexpected response structure:', response)
         // Fallback: just remove the sending state from temp message
         const currentMessages = messages[chatId] || []
         const tempMessageIndex = currentMessages.findIndex(msg => msg.id === tempMessage.id)
@@ -112,9 +100,6 @@ export default function MessageInput({ chatId }) {
           const updatedMessages = [...currentMessages]
           updatedMessages[tempMessageIndex] = { ...updatedMessages[tempMessageIndex], isSending: false }
           setChatMessages(chatId, updatedMessages)
-          console.log('Removed sending state from temp message')
-        } else {
-          console.warn('Temp message not found for fallback')
         }
       }
     } catch (error) {
