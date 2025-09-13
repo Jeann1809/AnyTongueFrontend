@@ -28,15 +28,34 @@ export default function LoginPage() {
       
       console.log('Login response:', response) // Debug log
       
-      // Store user data and authentication state
-      if (response.user) {
-        localStorage.setItem('anytongue_user', JSON.stringify(response.user))
+      // Ensure token is stored (backup in case API function didn't store it)
+      if (response.data && response.data.token) {
+        localStorage.setItem('anytongue_token', response.data.token)
+        console.log('Token stored in login page:', response.data.token.substring(0, 20) + '...')
       } else {
-        // If no user object, create a basic one from email
+        console.warn('No token in login response:', response)
+      }
+      
+      // Store user data and authentication state - user is nested in data.data.user
+      if (response.data && response.data.user) {
+        // Transform the user data to match expected format
+        const userData = {
+          id: response.data.user._id,
+          username: response.data.user.username,
+          email: response.data.user.email,
+          nativeLanguage: response.data.user.nativeLanguage,
+          createdAt: response.data.user.createdAt,
+          updatedAt: response.data.user.updatedAt
+        }
+        localStorage.setItem('anytongue_user', JSON.stringify(userData))
+        console.log('User data stored:', userData)
+      } else {
+        console.warn('No user data in login response:', response)
+        // Fallback: create basic user data
         const basicUser = {
           email: formData.email,
-          id: response.id || Date.now(),
-          username: response.username || formData.email.split('@')[0]
+          id: Date.now(),
+          username: formData.email.split('@')[0]
         }
         localStorage.setItem('anytongue_user', JSON.stringify(basicUser))
       }
@@ -47,7 +66,7 @@ export default function LoginPage() {
       console.log('LocalStorage after login:', {
         user: localStorage.getItem('anytongue_user'),
         isLoggedIn: localStorage.getItem('anytongue_isLoggedIn'),
-        token: localStorage.getItem('anytongue_token')
+        token: localStorage.getItem('anytongue_token') ? 'Token present' : 'No token'
       })
       
       // Show success message

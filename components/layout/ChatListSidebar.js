@@ -4,12 +4,19 @@ import { useState } from 'react'
 import { useChatContext } from '@/app/(main)/layout'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Search, Plus } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import CreateChatButton from '@/components/chat/CreateChatButton'
 
 export default function ChatListSidebar() {
-  const { chats, selectedChat, setSelectedChat } = useChatContext()
+  const { 
+    chats, 
+    selectedChat, 
+    setSelectedChat, 
+    isLoadingChats, 
+    loadUserChats, 
+    user 
+  } = useChatContext()
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredChats = chats.filter(chat =>
@@ -22,9 +29,7 @@ export default function ChatListSidebar() {
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Conversations</h2>
-          <Button size="icon" variant="outline" className="h-8 w-8">
-            <Plus className="h-4 w-4" />
-          </Button>
+          <CreateChatButton />
         </div>
         
         {/* Search */}
@@ -41,7 +46,12 @@ export default function ChatListSidebar() {
 
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto">
-        {filteredChats.length === 0 ? (
+        {isLoadingChats ? (
+          <div className="p-4 text-center text-gray-500">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            Loading conversations...
+          </div>
+        ) : filteredChats.length === 0 ? (
           <div className="p-4 text-center text-gray-500">
             {searchQuery ? 'No conversations found' : 'No conversations yet'}
           </div>

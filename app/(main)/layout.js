@@ -4,6 +4,7 @@ import { useState, createContext, useContext, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SideNavbar from '@/components/layout/SideNavbar'
 import ChatListSidebar from '@/components/layout/ChatListSidebar'
+import { chatAPI, isAuthenticated, getCurrentToken } from '@/lib/api'
 
 // Create context for managing chat state
 const ChatContext = createContext()
@@ -21,36 +22,8 @@ export default function MainLayout({ children }) {
   const [selectedChat, setSelectedChat] = useState(null)
   const [user, setUser] = useState(null)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
-  const [chats, setChats] = useState([
-    {
-      id: '1',
-      name: 'Maria Garcia',
-      lastMessage: '¡Hola! ¿Cómo estás?',
-      timestamp: '2 min ago',
-      unread: 2
-    },
-    {
-      id: '2',
-      name: 'Jean Dubois',
-      lastMessage: 'Bonjour! Comment allez-vous?',
-      timestamp: '1 hour ago',
-      unread: 0
-    },
-    {
-      id: '3',
-      name: 'Hans Mueller',
-      lastMessage: 'Guten Tag! Wie geht es Ihnen?',
-      timestamp: '3 hours ago',
-      unread: 1
-    },
-    {
-      id: '4',
-      name: 'Language Exchange Group',
-      lastMessage: 'Welcome to our weekly practice session!',
-      timestamp: '1 day ago',
-      unread: 5
-    }
-  ])
+  const [chats, setChats] = useState([])
+  const [isLoadingChats, setIsLoadingChats] = useState(false)
 
   const [messages, setMessages] = useState({
     '1': [
@@ -80,26 +53,109 @@ export default function MainLayout({ children }) {
     }))
   }
 
+  const setChatMessages = (chatId, messages) => {
+    setMessages(prev => ({
+      ...prev,
+      [chatId]: messages
+    }))
+  }
+
+  // Load user chats from API
+  const loadUserChats = async (userId) => {
+    if (!userId) return
+    
+    setIsLoadingChats(true)
+    try {
+      console.log('Loading chats for user:', userId)
+      const response = await chatAPI.getUserChats(userId)
+      
+      if (response.success && response.data) {
+        // Transform API response to match frontend format
+        const transformedChats = response.data.map(chat => {
+          // Get the other participant (not the current user)
+          const otherParticipant = chat.participants.find(p => p._id !== userId)
+          return {
+            id: chat._id,
+            name: otherParticipant ? otherParticipant.username : 'Unknown User',
+            lastMessage: 'No messages yet', // This would come from the latest message
+            timestamp: new Date(chat.updatedAt).toLocaleDateString(),
+            unread: 0, // This would come from unread message count
+            participants: chat.participants,
+            createdAt: chat.createdAt,
+            updatedAt: chat.updatedAt
+          }
+        })
+        
+        setChats(transformedChats)
+        console.log('Loaded chats:', transformedChats)
+      }
+    } catch (error) {
+      console.error('Error loading chats:', error)
+      // Keep empty chats array on error
+    } finally {
+      setIsLoadingChats(false)
+    }
+  }
+
+  // Create a new chat with another user
+  const createChatWithUser = async (otherUserId) => {
+    try {
+      console.log('Creating chat with user:', otherUserId)
+      const response = await chatAPI.createChat(otherUserId)
+      
+      if (response.success && response.data) {
+        // Transform and add to chats list
+        const chat = response.data
+        const otherParticipant = chat.participants.find(p => p._id !== user?.id)
+        const newChat = {
+          id: chat._id,
+          name: otherParticipant ? otherParticipant.username : 'Unknown User',
+          lastMessage: 'No messages yet',
+          timestamp: new Date(chat.createdAt).toLocaleDateString(),
+          unread: 0,
+          participants: chat.participants,
+          createdAt: chat.createdAt,
+          updatedAt: chat.updatedAt
+        }
+        
+        setChats(prev => [newChat, ...prev])
+        setSelectedChat(newChat)
+        console.log('Created new chat:', newChat)
+        return newChat
+      }
+    } catch (error) {
+      console.error('Error creating chat:', error)
+      throw error
+    }
+  }
+
   // Simple authentication check
   useEffect(() => {
     console.log('Main layout auth check running...')
     
     const savedUser = localStorage.getItem('anytongue_user')
     const isLoggedIn = localStorage.getItem('anytongue_isLoggedIn')
-    const token = localStorage.getItem('anytongue_token')
+    const token = getCurrentToken()
     
     console.log('Auth check values:', {
-      savedUser,
+      savedUser: savedUser ? 'User data present' : 'No user data',
       isLoggedIn,
-      token,
-      pathname: window.location.pathname
+      token: token ? 'Token present' : 'No token',
+      pathname: window.location.pathname,
+      isAuthenticated: isAuthenticated()
     })
     
-    if (savedUser && savedUser !== 'undefined' && savedUser !== 'null' && isLoggedIn === 'true') {
+    // Check if user is properly authenticated with token
+    if (isAuthenticated() && savedUser && savedUser !== 'undefined' && savedUser !== 'null') {
       try {
         const userData = JSON.parse(savedUser)
         console.log('Parsed user data:', userData)
         setUser(userData)
+        
+        // Load user chats after setting user data
+        if (userData.id) {
+          loadUserChats(userData.id)
+        }
       } catch (error) {
         console.error('Error parsing user data:', error)
         console.log('Clearing invalid auth data and redirecting to login')
@@ -128,8 +184,12 @@ export default function MainLayout({ children }) {
     messages,
     setMessages,
     addMessage,
+    setChatMessages,
     user,
-    setUser
+    setUser,
+    loadUserChats,
+    createChatWithUser,
+    isLoadingChats
   }
 
   // Show loading screen while checking authentication
