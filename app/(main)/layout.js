@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, createContext, useContext, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import SideNavbar from '@/components/layout/SideNavbar'
 import ChatListSidebar from '@/components/layout/ChatListSidebar'
 
@@ -16,8 +17,10 @@ export const useChatContext = () => {
 }
 
 export default function MainLayout({ children }) {
+  const router = useRouter()
   const [selectedChat, setSelectedChat] = useState(null)
   const [user, setUser] = useState(null)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [chats, setChats] = useState([
     {
       id: '1',
@@ -79,22 +82,43 @@ export default function MainLayout({ children }) {
 
   // Simple authentication check
   useEffect(() => {
+    console.log('Main layout auth check running...')
+    
     const savedUser = localStorage.getItem('anytongue_user')
     const isLoggedIn = localStorage.getItem('anytongue_isLoggedIn')
+    const token = localStorage.getItem('anytongue_token')
+    
+    console.log('Auth check values:', {
+      savedUser,
+      isLoggedIn,
+      token,
+      pathname: window.location.pathname
+    })
     
     if (savedUser && savedUser !== 'undefined' && savedUser !== 'null' && isLoggedIn === 'true') {
       try {
-        setUser(JSON.parse(savedUser))
+        const userData = JSON.parse(savedUser)
+        console.log('Parsed user data:', userData)
+        setUser(userData)
       } catch (error) {
         console.error('Error parsing user data:', error)
+        console.log('Clearing invalid auth data and redirecting to login')
         localStorage.removeItem('anytongue_user')
         localStorage.removeItem('anytongue_isLoggedIn')
-        window.location.href = '/login'
+        localStorage.removeItem('anytongue_token')
+        router.replace('/login')
       }
     } else {
-      window.location.href = '/login'
+      console.log('No valid auth data found, redirecting to login')
+      // Only redirect if we're not already on login page
+      if (window.location.pathname !== '/login') {
+        router.replace('/login')
+      }
     }
-  }, [])
+    
+    // Always set checking auth to false after the check
+    setIsCheckingAuth(false)
+  }, [router])
 
   const contextValue = {
     selectedChat,
@@ -106,6 +130,18 @@ export default function MainLayout({ children }) {
     addMessage,
     user,
     setUser
+  }
+
+  // Show loading screen while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="flex h-screen bg-background items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -16,6 +16,7 @@ export default function LoginPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,12 +26,41 @@ export default function LoginPage() {
     try {
       const response = await authAPI.login(formData)
       
+      console.log('Login response:', response) // Debug log
+      
       // Store user data and authentication state
-      localStorage.setItem('anytongue_user', JSON.stringify(response.user))
+      if (response.user) {
+        localStorage.setItem('anytongue_user', JSON.stringify(response.user))
+      } else {
+        // If no user object, create a basic one from email
+        const basicUser = {
+          email: formData.email,
+          id: response.id || Date.now(),
+          username: response.username || formData.email.split('@')[0]
+        }
+        localStorage.setItem('anytongue_user', JSON.stringify(basicUser))
+      }
+      
       localStorage.setItem('anytongue_isLoggedIn', 'true')
       
-      router.push('/')
+      // Verify localStorage was set
+      console.log('LocalStorage after login:', {
+        user: localStorage.getItem('anytongue_user'),
+        isLoggedIn: localStorage.getItem('anytongue_isLoggedIn'),
+        token: localStorage.getItem('anytongue_token')
+      })
+      
+      // Show success message
+      setSuccessMessage('Login successful! Redirecting to home page...')
+      
+      // Show native alert
+      alert('Login successful! Redirecting to home page...')
+      
+      // Use window.location for more reliable redirect
+      window.location.href = '/'
+      
     } catch (err) {
+      console.error('Login error:', err)
       setError(err.message || 'Login failed. Please check your credentials.')
     } finally {
       setIsLoading(false)
@@ -57,6 +87,11 @@ export default function LoginPage() {
           {error && (
             <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
               <p className="text-sm text-destructive">{error}</p>
+            </div>
+          )}
+          {successMessage && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
+              <p className="text-sm text-green-800">{successMessage}</p>
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -91,6 +126,11 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Signing In...' : 'Log In'}
             </Button>
+            {isLoading && (
+              <div className="mt-2 text-center">
+                <p className="text-sm text-gray-600">Redirecting to home page...</p>
+              </div>
+            )}
           </form>
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
