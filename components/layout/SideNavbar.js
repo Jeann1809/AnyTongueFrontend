@@ -30,20 +30,20 @@ export default function SideNavbar() {
 
   return (
     <div className={`bg-gradient-to-b from-blue-50/90 to-sky-50/90 dark:from-blue-900/90 dark:to-sky-900/90 backdrop-blur-xl border-r-2 border-blue-200/50 dark:border-blue-700/50 shadow-modern-lg transition-all duration-300 ${
-      isCollapsed ? 'w-16' : 'w-20'
+      isCollapsed ? 'w-12 sm:w-16' : 'w-16 sm:w-20'
     }`}>
       <div className="flex flex-col h-full">
         {/* Logo/Brand */}
-        <div className="p-4 border-b border-blue-200/30 dark:border-blue-700/30">
+        <div className="p-2 sm:p-4 border-b border-blue-200/30 dark:border-blue-700/30">
           <div className="flex items-center justify-center">
-            <div className="w-14 h-14 gradient-sky rounded-xl flex items-center justify-center shadow-modern hover-lift">
-              <span className="text-white font-bold text-xl" style={{ fontFamily: 'Poppins, sans-serif' }}>AT</span>
+            <div className="w-10 h-10 sm:w-14 sm:h-14 gradient-sky rounded-xl flex items-center justify-center shadow-modern hover-lift">
+              <span className="text-white font-bold text-lg sm:text-xl" style={{ fontFamily: 'Poppins, sans-serif' }}>AT</span>
             </div>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-3 space-y-3">
+        <nav className="flex-1 p-2 sm:p-3 space-y-2 sm:space-y-3">
           {navigationItems.map((item, index) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -54,14 +54,14 @@ export default function SideNavbar() {
                   <Button
                     variant={isActive ? 'default' : 'ghost'}
                     size="icon"
-                    className={`w-full h-14 rounded-xl transition-all duration-300 hover-lift ${
+                    className={`w-full h-10 sm:h-14 rounded-xl transition-all duration-300 hover-lift ${
                       isActive 
                         ? 'gradient-azure text-white shadow-modern' 
                         : 'hover:bg-blue-100 dark:hover:bg-blue-800 hover:shadow-modern'
                     }`}
                     title={item.name}
                   >
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </Button>
                 </Link>
               </div>
@@ -70,15 +70,15 @@ export default function SideNavbar() {
         </nav>
 
         {/* Logout Button */}
-        <div className="p-3 border-t border-blue-200/30 dark:border-blue-700/30">
+        <div className="p-2 sm:p-3 border-t border-blue-200/30 dark:border-blue-700/30">
           <Button
             variant="ghost"
             size="icon"
-            className="w-full h-14 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover-lift"
+            className="w-full h-10 sm:h-14 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover-lift"
             title="Logout"
             onClick={handleLogout}
           >
-            <LogOut className="w-6 h-6" />
+            <LogOut className="w-5 h-5 sm:w-6 sm:h-6" />
           </Button>
         </div>
       </div>

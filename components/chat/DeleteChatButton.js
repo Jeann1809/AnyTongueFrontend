@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useChatContext } from '@/app/(main)/layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +12,11 @@ export default function DeleteChatButton({ chatId, chatName }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleDeleteChat = async () => {
     setIsLoading(true)
@@ -39,9 +45,9 @@ export default function DeleteChatButton({ chatId, chatName }) {
       </Button>
 
       {/* Confirmation Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <Card className="w-96 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-red-200/50 dark:border-red-800/50 shadow-modern-lg animate-bounce-in">
+      {isOpen && mounted && createPortal(
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] animate-fade-in p-4">
+          <Card className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-red-200/50 dark:border-red-800/50 shadow-modern-lg animate-bounce-in">
             <CardHeader className="p-6">
               <CardTitle className="flex items-center text-red-600 dark:text-red-400 text-xl font-bold">
                 <div className="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center mr-3">
@@ -60,15 +66,15 @@ export default function DeleteChatButton({ chatId, chatName }) {
                 </div>
               )}
               
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   variant="destructive" 
                   onClick={handleDeleteChat}
                   disabled={isLoading}
-                  className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 hover-lift"
+                  className="w-full sm:flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 hover-lift"
                 >
                   {isLoading ? (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center justify-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Deleting...</span>
                     </div>
@@ -78,14 +84,15 @@ export default function DeleteChatButton({ chatId, chatName }) {
                   variant="outline" 
                   onClick={() => setIsOpen(false)}
                   disabled={isLoading}
-                  className="flex-1 px-6 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
+                  className="w-full sm:flex-1 px-6 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
                 >
                   Cancel
                 </Button>
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

@@ -58,9 +58,6 @@ export default function LoginPage() {
       // Show success message
       setSuccessMessage('Login successful! Redirecting to home page...')
       
-      // Show native alert
-      alert('Login successful! Redirecting to home page...')
-      
       // Use window.location for more reliable redirect
       window.location.href = '/'
       
@@ -80,23 +77,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-modern-lg animate-bounce-in">
-        <CardHeader className="space-y-4 p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20 py-4 px-4 sm:py-12 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-sm sm:max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-modern-lg animate-bounce-in">
+        <CardHeader className="space-y-3 sm:space-y-4 p-4 sm:p-8">
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 mb-4 relative">
+            <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 mb-3 sm:mb-4 relative">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
               <div className="absolute inset-2 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-modern">
-                <span className="text-2xl">🔐</span>
+                <span className="text-xl sm:text-2xl">🔐</span>
               </div>
             </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent">Welcome Back</CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400 text-lg">
+            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent">Welcome Back</CardTitle>
+            <CardDescription className="text-slate-600 dark:text-slate-400 text-base sm:text-lg">
               Sign in to your AnyTongue account
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent className="p-8">
+        <CardContent className="p-4 sm:p-8">
           {error && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl animate-slide-up">
               <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
@@ -107,8 +104,8 @@ export default function LoginPage() {
               <p className="text-sm text-green-600 dark:text-green-400 font-medium">{successMessage}</p>
             </div>
           )}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-3">
               <label htmlFor="email" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Email
               </label>
@@ -120,10 +117,10 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
-                className="input-modern"
+                className="input-modern h-12 sm:h-auto text-base sm:text-sm"
               />
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <label htmlFor="password" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Password
               </label>
@@ -135,24 +132,24 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
-                className="input-modern"
+                className="input-modern h-12 sm:h-auto text-base sm:text-sm"
               />
             </div>
-            <Button type="submit" className="w-full btn-modern" disabled={isLoading}>
+            <Button type="submit" className="w-full btn-modern h-12 sm:h-auto text-base sm:text-sm" disabled={isLoading}>
               {isLoading ? (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Signing In...</span>
                 </div>
               ) : 'Log In'}
             </Button>
             {isLoading && (
-              <div className="mt-4 text-center animate-fade-in">
+              <div className="mt-3 sm:mt-4 text-center animate-fade-in">
                 <p className="text-sm text-slate-600 dark:text-slate-400">Redirecting to home page...</p>
               </div>
             )}
           </form>
-          <div className="mt-6 text-center">
+          <div className="mt-4 sm:mt-6 text-center">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Don't have an account?{' '}
               <Link href="/signup" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">

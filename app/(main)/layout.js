@@ -45,6 +45,8 @@ export default function MainLayout({ children }) {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [chats, setChats] = useState([])
   const [isLoadingChats, setIsLoadingChats] = useState(false)
+  const [chatsLoaded, setChatsLoaded] = useState(false)
+  const [showChatList, setShowChatList] = useState(true)
   const chatsLoadedRef = useRef(false)
 
   // Check if we should hide the conversations sidebar
@@ -276,9 +278,31 @@ export default function MainLayout({ children }) {
     }
   }, [user, handleGlobalSocketMessage])
 
+  // Mobile-specific chat selection handler
+  const handleMobileChatSelect = (chat) => {
+    setSelectedChat(chat)
+    // Hide chat list on mobile when chat is selected
+    const isMobile = window.innerWidth < 640 // sm breakpoint
+    if (isMobile) {
+      setShowChatList(false)
+    }
+  }
+
+  // Handle window resize to show chat list on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 640) { // sm breakpoint
+        setShowChatList(true)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   const contextValue = {
     selectedChat,
-    setSelectedChat,
+    setSelectedChat: handleMobileChatSelect,
     chats,
     setChats,
     user,
@@ -290,7 +314,9 @@ export default function MainLayout({ children }) {
     updateChatWithNewMessage,
     markChatAsRead,
     resetChatsLoaded,
-    handleGlobalSocketMessage
+    handleGlobalSocketMessage,
+    showChatList,
+    setShowChatList
   }
 
   // Show loading screen while checking authentication
@@ -312,10 +338,10 @@ export default function MainLayout({ children }) {
         <SideNavbar />
         
         {/* Chat List Sidebar - Medium Width (hidden on profile/settings) */}
-        {!shouldHideConversations && <ChatListSidebar />}
+        {!shouldHideConversations && showChatList && <ChatListSidebar />}
         
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {children}
         </main>
       </div>

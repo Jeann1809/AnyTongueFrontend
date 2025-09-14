@@ -145,16 +145,16 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="flex items-center justify-center h-64">
+      <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+        <div className="flex items-center justify-center h-48 sm:h-64">
           <div className="text-center animate-fade-in">
-            <div className="mx-auto h-16 w-16 mb-6 relative">
+            <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 mb-4 sm:mb-6 relative">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
               <div className="absolute inset-2 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-modern">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-blue-500" />
               </div>
             </div>
-            <p className="text-slate-600 dark:text-slate-400 text-lg">Loading profile...</p>
+            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg">Loading profile...</p>
           </div>
         </div>
       </div>
@@ -162,17 +162,17 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="text-center animate-fade-in">
-        <div className="mx-auto h-20 w-20 mb-6 relative">
+        <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 mb-4 sm:mb-6 relative">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
           <div className="absolute inset-2 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-modern">
-            <User className="h-10 w-10 text-blue-500" />
+            <User className="h-8 w-8 sm:h-10 sm:w-10 text-blue-500" />
           </div>
         </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent mb-3">Profile</h1>
-        <p className="text-slate-600 dark:text-slate-400 text-lg">Manage your account information and preferences</p>
+        <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent mb-2 sm:mb-3">Profile</h1>
+        <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg">Manage your account information and preferences</p>
       </div>
 
       {/* Error Message */}
@@ -189,22 +189,22 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {/* Basic Information */}
         <Card className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-modern-lg animate-slide-up">
-          <CardHeader className="p-6">
-            <CardTitle className="flex items-center text-xl font-bold">
-              <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center mr-3">
-                <User className="h-5 w-5 text-white" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center text-lg sm:text-xl font-bold">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-xl gradient-primary flex items-center justify-center mr-2 sm:mr-3">
+                <User className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               Basic Information
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400">
+            <CardDescription className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
               Your account details and display information
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div className="space-y-3">
+          <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-3">
               <label htmlFor="username" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Username
               </label>
@@ -215,10 +215,10 @@ export default function ProfilePage() {
                 onChange={handleChange}
                 disabled={!isEditing}
                 placeholder="Enter your username"
-                className="input-modern"
+                className="input-modern h-10 sm:h-auto text-sm sm:text-base"
               />
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <label htmlFor="email" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Email
               </label>
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                 value={profileData.email}
                 disabled={true}
                 placeholder="Your email address"
-                className="input-modern bg-slate-50 dark:bg-slate-800/50"
+                className="input-modern bg-slate-50 dark:bg-slate-800/50 h-10 sm:h-auto text-sm sm:text-base"
               />
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Email cannot be changed. Contact support if you need to update your email.
@@ -239,19 +239,19 @@ export default function ProfilePage() {
 
         {/* Language Preferences */}
         <Card className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-modern-lg animate-slide-up" style={{ animationDelay: '100ms' }}>
-          <CardHeader className="p-6">
-            <CardTitle className="flex items-center text-xl font-bold">
-              <div className="w-8 h-8 rounded-xl gradient-secondary flex items-center justify-center mr-3">
-                <Globe className="h-5 w-5 text-white" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center text-lg sm:text-xl font-bold">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-xl gradient-secondary flex items-center justify-center mr-2 sm:mr-3">
+                <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               Language Preferences
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400">
+            <CardDescription className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
               Set your native language for better translation and communication
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div className="space-y-3">
+          <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-3">
               <label htmlFor="nativeLanguage" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Native Language
               </label>
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                 onValueChange={handleLanguageChange}
                 disabled={!isEditing}
               >
-                <SelectTrigger className="input-modern">
+                <SelectTrigger className="input-modern h-10 sm:h-auto text-sm sm:text-base">
                   <SelectValue placeholder="Select your native language" />
                 </SelectTrigger>
                 <SelectContent>
@@ -276,29 +276,29 @@ export default function ProfilePage() {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex justify-end space-x-3 animate-slide-up" style={{ animationDelay: '200ms' }}>
+        <div className="flex flex-col sm:flex-row justify-end gap-3 animate-slide-up" style={{ animationDelay: '200ms' }}>
           {isEditing ? (
             <>
               <Button 
                 variant="outline" 
                 onClick={handleCancel} 
                 disabled={isSaving}
-                className="px-6 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
+                className="w-full sm:w-auto px-4 sm:px-6 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300 h-10 sm:h-auto text-sm sm:text-base"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleSave} 
                 disabled={isSaving}
-                className="btn-modern"
+                className="w-full sm:w-auto btn-modern h-10 sm:h-auto text-sm sm:text-base"
               >
                 {isSaving ? (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center space-x-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     <span>Saving...</span>
                   </div>
                 ) : (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center space-x-2">
                     <Save className="h-4 w-4" />
                     <span>Save Changes</span>
                   </div>
@@ -308,9 +308,9 @@ export default function ProfilePage() {
           ) : (
             <Button 
               onClick={() => setIsEditing(true)}
-              className="btn-modern"
+              className="w-full sm:w-auto btn-modern h-10 sm:h-auto text-sm sm:text-base"
             >
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-center space-x-2">
                 <User className="h-4 w-4" />
                 <span>Edit Profile</span>
               </div>
