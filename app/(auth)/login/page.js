@@ -80,28 +80,36 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center">
-            Sign in to your AnyTongue account
-          </CardDescription>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-modern-lg animate-bounce-in">
+        <CardHeader className="space-y-4 p-8">
+          <div className="text-center">
+            <div className="mx-auto h-16 w-16 mb-4 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute inset-2 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-modern">
+                <span className="text-2xl">🔐</span>
+              </div>
+            </div>
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent">Welcome Back</CardTitle>
+            <CardDescription className="text-slate-600 dark:text-slate-400 text-lg">
+              Sign in to your AnyTongue account
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-8">
           {error && (
-            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-              <p className="text-sm text-destructive">{error}</p>
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl animate-slide-up">
+              <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
             </div>
           )}
           {successMessage && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
-              <p className="text-sm text-green-800">{successMessage}</p>
+            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl animate-slide-up">
+              <p className="text-sm text-green-600 dark:text-green-400 font-medium">{successMessage}</p>
             </div>
           )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-3">
+              <label htmlFor="email" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Email
               </label>
               <Input
@@ -112,10 +120,11 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
+                className="input-modern"
               />
             </div>
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
+            <div className="space-y-3">
+              <label htmlFor="password" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Password
               </label>
               <Input
@@ -126,21 +135,27 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
+                className="input-modern"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing In...' : 'Log In'}
+            <Button type="submit" className="w-full btn-modern" disabled={isLoading}>
+              {isLoading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Signing In...</span>
+                </div>
+              ) : 'Log In'}
             </Button>
             {isLoading && (
-              <div className="mt-2 text-center">
-                <p className="text-sm text-gray-600">Redirecting to home page...</p>
+              <div className="mt-4 text-center animate-fade-in">
+                <p className="text-sm text-slate-600 dark:text-slate-400">Redirecting to home page...</p>
               </div>
             )}
           </form>
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
+          <div className="mt-6 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Don't have an account?{' '}
-              <Link href="/signup" className="text-primary hover:underline">
+              <Link href="/signup" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
                 Sign Up
               </Link>
             </p>

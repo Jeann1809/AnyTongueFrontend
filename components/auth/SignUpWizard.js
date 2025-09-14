@@ -103,35 +103,43 @@ export default function SignUpWizard() {
   const isStep2Valid = formData.nativeLanguage
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">
-          {currentStep === 1 ? 'Create your account' : 'Set up your profile'}
-        </CardTitle>
-        <CardDescription className="text-center">
-          {currentStep === 1 
-            ? 'Enter your basic information to get started' 
-            : 'Select your native language to personalize your experience'
-          }
-        </CardDescription>
-        <div className="flex justify-center mt-4">
-          <div className="flex space-x-2">
-            <div className={`w-2 h-2 rounded-full ${currentStep >= 1 ? 'bg-primary' : 'bg-gray-300'}`} />
-            <div className={`w-2 h-2 rounded-full ${currentStep >= 2 ? 'bg-primary' : 'bg-gray-300'}`} />
+    <Card className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-modern-lg animate-bounce-in">
+      <CardHeader className="space-y-4 p-8">
+        <div className="text-center">
+          <div className="mx-auto h-16 w-16 mb-4 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
+            <div className="absolute inset-2 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-modern">
+              <span className="text-2xl">{currentStep === 1 ? '👤' : '🌍'}</span>
+            </div>
+          </div>
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent">
+            {currentStep === 1 ? 'Create your account' : 'Set up your profile'}
+          </CardTitle>
+          <CardDescription className="text-slate-600 dark:text-slate-400 text-lg">
+            {currentStep === 1 
+              ? 'Enter your basic information to get started' 
+              : 'Select your native language to personalize your experience'
+            }
+          </CardDescription>
+        </div>
+        <div className="flex justify-center mt-6">
+          <div className="flex space-x-3">
+            <div className={`w-3 h-3 rounded-full transition-all duration-300 ${currentStep >= 1 ? 'gradient-primary' : 'bg-slate-300 dark:bg-slate-600'}`} />
+            <div className={`w-3 h-3 rounded-full transition-all duration-300 ${currentStep >= 2 ? 'gradient-primary' : 'bg-slate-300 dark:bg-slate-600'}`} />
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-8">
         {error && (
-          <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-            <p className="text-sm text-destructive">{error}</p>
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl animate-slide-up">
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {currentStep === 1 && (
             <>
-              <div className="space-y-2">
-                <label htmlFor="username" className="text-sm font-medium">
+              <div className="space-y-3">
+                <label htmlFor="username" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Username
                 </label>
                 <Input
@@ -144,10 +152,11 @@ export default function SignUpWizard() {
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="Choose a username (3-30 characters)"
+                  className="input-modern"
                 />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium">
+              <div className="space-y-3">
+                <label htmlFor="email" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Email
                 </label>
                 <Input
@@ -158,10 +167,11 @@ export default function SignUpWizard() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email address"
+                  className="input-modern"
                 />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium">
+              <div className="space-y-3">
+                <label htmlFor="password" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Password
                 </label>
                 <Input
@@ -173,10 +183,11 @@ export default function SignUpWizard() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Create a password (min 6 characters)"
+                  className="input-modern"
                 />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium">
+              <div className="space-y-3">
+                <label htmlFor="confirmPassword" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Confirm Password
                 </label>
                 <Input
@@ -187,9 +198,10 @@ export default function SignUpWizard() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm your password"
+                  className="input-modern"
                 />
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="text-sm text-destructive">Passwords do not match</p>
+                  <p className="text-sm text-red-600 dark:text-red-400 font-medium">Passwords do not match</p>
                 )}
               </div>
             </>
@@ -197,12 +209,12 @@ export default function SignUpWizard() {
 
           {currentStep === 2 && (
             <>
-              <div className="space-y-2">
-                <label htmlFor="nativeLanguage" className="text-sm font-medium">
+              <div className="space-y-3">
+                <label htmlFor="nativeLanguage" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Native Language
                 </label>
                 <Select value={formData.nativeLanguage} onValueChange={handleLanguageChange}>
-                  <SelectTrigger>
+                  <SelectTrigger className="input-modern">
                     <SelectValue placeholder="Select your native language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -217,9 +229,14 @@ export default function SignUpWizard() {
             </>
           )}
 
-          <div className="flex justify-between pt-4">
+          <div className="flex justify-between pt-6">
             {currentStep > 1 && (
-              <Button type="button" variant="outline" onClick={prevStep}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={prevStep}
+                className="px-6 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
+              >
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
@@ -229,7 +246,7 @@ export default function SignUpWizard() {
                 type="button" 
                 onClick={nextStep} 
                 disabled={!isStep1Valid}
-                className="ml-auto"
+                className="ml-auto btn-modern"
               >
                 Next
                 <ChevronRight className="w-4 h-4 ml-2" />
@@ -238,18 +255,23 @@ export default function SignUpWizard() {
               <Button 
                 type="submit" 
                 disabled={!isStep2Valid || isLoading}
-                className="ml-auto"
+                className="ml-auto btn-modern"
               >
-                {isLoading ? 'Creating Account...' : 'Create Account'}
+                {isLoading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Creating Account...</span>
+                  </div>
+                ) : 'Create Account'}
               </Button>
             )}
           </div>
         </form>
         
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
+        <div className="mt-6 text-center">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Already have an account?{' '}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
               Sign In
             </Link>
           </p>
