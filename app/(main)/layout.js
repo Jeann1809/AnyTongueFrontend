@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, createContext, useContext, useEffect } from 'react'
+import { useState, createContext, useContext, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import SideNavbar from '@/components/layout/SideNavbar'
 import ChatListSidebar from '@/components/layout/ChatListSidebar'
 import { chatAPI, isAuthenticated, getCurrentToken } from '@/lib/api'
+import messageService from '@/services/messageService'
+import socketService from '@/services/socketService'
 
 // Create context for managing chat state
 const ChatContext = createContext()
@@ -17,6 +19,24 @@ export const useChatContext = () => {
   return context
 }
 
+// Helper function to format message timestamps
+const formatMessageTimestamp = (timestamp) => {
+  const now = new Date()
+  const messageTime = new Date(timestamp)
+  const diffInMinutes = Math.floor((now - messageTime) / (1000 * 60))
+  
+  if (diffInMinutes < 1) return 'Just now'
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`
+  
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) return `${diffInHours}h ago`
+  
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays < 7) return `${diffInDays}d ago`
+  
+  return messageTime.toLocaleDateString()
+}
+
 export default function MainLayout({ children }) {
   const router = useRouter()
   const [selectedChat, setSelectedChat] = useState(null)
@@ -24,6 +44,7 @@ export default function MainLayout({ children }) {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [chats, setChats] = useState([])
   const [isLoadingChats, setIsLoadingChats] = useState(false)
+  const chatsLoadedRef = useRef(false)
 
   const [messages, setMessages] = useState({
     '1': [
@@ -60,35 +81,115 @@ export default function MainLayout({ children }) {
     }))
   }
 
+  // Update chat list when a new message arrives
+  const updateChatWithNewMessage = (chatId, message) => {
+    setChats(prev => prev.map(chat => {
+      if (chat.id === chatId) {
+        // Get display text with translation for the current user's language
+        const displayInfo = messageService.getDisplayText({
+          text: message.originalText,
+          translations: message.translations
+        }, user?.nativeLanguage || 'en')
+        
+        // Only increment unread count if:
+        // 1. Message is not from current user
+        // 2. User is not currently viewing this chat
+        const isFromCurrentUser = message.sender._id === user?.id
+        const isCurrentlyViewing = selectedChat?.id === chatId
+        
+        let newUnreadCount = chat.unread
+        if (!isFromCurrentUser && !isCurrentlyViewing) {
+          newUnreadCount = chat.unread + 1
+        } else if (isCurrentlyViewing) {
+          newUnreadCount = 0 // Reset to 0 when user is viewing the chat
+        }
+        
+        return {
+          ...chat,
+          lastMessage: displayInfo.text,
+          timestamp: formatMessageTimestamp(message.createdAt),
+          unread: newUnreadCount
+        }
+      }
+      return chat
+    }))
+  }
+
+  // Mark messages as read for a specific chat
+  const markChatAsRead = (chatId) => {
+    setChats(prev => prev.map(chat => 
+      chat.id === chatId ? { ...chat, unread: 0 } : chat
+    ))
+  }
+
+  // Reset chats loaded state (useful for logout/login)
+  const resetChatsLoaded = () => {
+    chatsLoadedRef.current = false
+    setChats([])
+  }
+
+  // Global socket message handler for chat list updates
+  const handleGlobalSocketMessage = useCallback((messageData) => {
+    updateChatWithNewMessage(messageData.chat, messageData)
+  }, [])
+
   // Load user chats from API
   const loadUserChats = async (userId) => {
-    if (!userId) return
+    if (!userId || isLoadingChats || chatsLoadedRef.current) return
     
     setIsLoadingChats(true)
+    chatsLoadedRef.current = true
     try {
       const response = await chatAPI.getUserChats(userId)
       
       if (response.success && response.data) {
-        // Transform API response to match frontend format
-        const transformedChats = response.data.map(chat => {
-          // Get the other participant (not the current user)
+        // First, create basic chat objects without last messages
+        const basicChats = response.data.map(chat => {
           const otherParticipant = chat.participants.find(p => p._id !== userId)
           return {
             id: chat._id,
             name: otherParticipant ? otherParticipant.username : 'Unknown User',
-            lastMessage: 'No messages yet', // This would come from the latest message
-            timestamp: new Date(chat.updatedAt).toLocaleDateString(),
-            unread: 0, // This would come from unread message count
+            lastMessage: 'No messages yet',
+            timestamp: formatMessageTimestamp(chat.updatedAt),
+            unread: 0,
             participants: chat.participants,
             createdAt: chat.createdAt,
             updatedAt: chat.updatedAt
           }
         })
         
-        setChats(transformedChats)
+        // Set basic chats first to show them immediately
+        setChats(basicChats)
+        
+        // Then load last messages in parallel
+        const chatsWithLastMessages = await Promise.all(
+          basicChats.map(async (chat) => {
+            try {
+              const lastMessageResponse = await chatAPI.getLastMessage(chat.id)
+              if (lastMessageResponse.success && lastMessageResponse.data.length > 0) {
+                const lastMsg = lastMessageResponse.data[0]
+                const displayInfo = messageService.getDisplayText({
+                  text: lastMsg.originalText,
+                  translations: lastMsg.translations
+                }, user?.nativeLanguage || 'en')
+                
+                return {
+                  ...chat,
+                  lastMessage: displayInfo.text,
+                  timestamp: formatMessageTimestamp(lastMsg.createdAt)
+                }
+              }
+            } catch (error) {
+              // Silent fail for last message loading
+            }
+            return chat
+          })
+        )
+        
+        // Update chats with last messages
+        setChats(chatsWithLastMessages)
       }
     } catch (error) {
-      console.error('Error loading chats:', error)
       // Keep empty chats array on error
     } finally {
       setIsLoadingChats(false)
@@ -136,12 +237,11 @@ export default function MainLayout({ children }) {
         const userData = JSON.parse(savedUser)
         setUser(userData)
         
-        // Load user chats after setting user data
-        if (userData.id) {
+        // Load user chats after setting user data (only if not already loaded)
+        if (userData.id && !chatsLoadedRef.current) {
           loadUserChats(userData.id)
         }
       } catch (error) {
-        console.error('Error parsing user data:', error)
         localStorage.removeItem('anytongue_user')
         localStorage.removeItem('anytongue_isLoggedIn')
         localStorage.removeItem('anytongue_token')
@@ -158,6 +258,21 @@ export default function MainLayout({ children }) {
     setIsCheckingAuth(false)
   }, [router])
 
+  // Set up global socket listener for chat list updates
+  useEffect(() => {
+    if (!user) return
+
+    const socket = socketService.connect()
+    
+    if (socket) {
+      socketService.onNewMessage(handleGlobalSocketMessage)
+      
+      return () => {
+        socketService.offNewMessage()
+      }
+    }
+  }, [user, handleGlobalSocketMessage])
+
   const contextValue = {
     selectedChat,
     setSelectedChat,
@@ -171,7 +286,11 @@ export default function MainLayout({ children }) {
     setUser,
     loadUserChats,
     createChatWithUser,
-    isLoadingChats
+    isLoadingChats,
+    updateChatWithNewMessage,
+    markChatAsRead,
+    resetChatsLoaded,
+    handleGlobalSocketMessage
   }
 
   // Show loading screen while checking authentication

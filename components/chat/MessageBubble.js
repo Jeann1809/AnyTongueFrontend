@@ -24,8 +24,8 @@ export default function MessageBubble({ message }) {
         
         {/* Show original text if message is translated */}
         {isTranslated && originalText && originalText !== text && (
-          <div className="mt-1">
-            <p className="text-xs opacity-60 italic">
+          <div>
+            <p className="text-xs opacity-50 italic">
               {originalText}
             </p>
           </div>

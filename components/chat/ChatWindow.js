@@ -7,6 +7,7 @@ import MessageInput from './MessageInput'
 import { ArrowLeft, MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { chatAPI } from '@/lib/api'
+import messageService from '@/services/messageService'
 
 export default function ChatWindow() {
   const { selectedChat, messages, setSelectedChat, user, setChatMessages } = useChatContext()
@@ -27,15 +28,25 @@ export default function ChatWindow() {
         
         if (response.success && response.data) {
           // Transform messages to match frontend format
-          const transformedMessages = response.data.map(msg => ({
-            id: msg._id,
-            sender: msg.sender?.username || 'Unknown',
-            text: msg.originalText,
-            translations: msg.translations,
-            timestamp: new Date(msg.createdAt).toLocaleTimeString(),
-            isOwn: msg.sender?._id === user?.id,
-            senderId: msg.sender?._id
-          }))
+          const transformedMessages = response.data.map(msg => {
+            // Get display text with translation for the current user's language
+            const displayInfo = messageService.getDisplayText({
+              text: msg.originalText,
+              translations: msg.translations
+            }, user?.nativeLanguage || 'en')
+            
+            return {
+              id: msg._id,
+              sender: msg.sender?.username || 'Unknown',
+              text: displayInfo.text,
+              translations: msg.translations,
+              timestamp: new Date(msg.createdAt).toLocaleTimeString(),
+              isOwn: msg.sender?._id === user?.id,
+              senderId: msg.sender?._id,
+              originalText: displayInfo.originalText,
+              isTranslated: displayInfo.isTranslated
+            }
+          })
           
           // Update messages in context
           setChatMessages(selectedChat.id, transformedMessages)

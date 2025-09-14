@@ -6,7 +6,7 @@ import socketService from '@/services/socketService'
 import messageService from '@/services/messageService'
 
 export const useMessages = (chatId) => {
-  const { user } = useChatContext()
+  const { user, updateChatWithNewMessage, markChatAsRead } = useChatContext()
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -15,63 +15,70 @@ export const useMessages = (chatId) => {
   
   const messagesEndRef = useRef(null)
   const isLoadingMoreRef = useRef(false)
+  
+  // Use refs to store the latest functions to avoid dependency issues
+  const updateChatWithNewMessageRef = useRef(updateChatWithNewMessage)
+  const markChatAsReadRef = useRef(markChatAsRead)
+  const handleNewMessageRef = useRef()
+  
+  // Update refs when functions change
+  useEffect(() => {
+    updateChatWithNewMessageRef.current = updateChatWithNewMessage
+    markChatAsReadRef.current = markChatAsRead
+  }, [updateChatWithNewMessage, markChatAsRead])
 
   // Scroll to bottom function
   const scrollToBottom = useCallback(() => {
-    console.log('scrollToBottom called, messagesEndRef:', messagesEndRef.current)
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-      console.log('Scrolled to bottom')
-    } else {
-      console.log('messagesEndRef is null, cannot scroll')
     }
   }, [])
 
   // Load initial messages
   const loadMessages = useCallback(async (currentChatId, showLoading = true) => {
-    console.log('loadMessages called with chatId:', currentChatId, 'showLoading:', showLoading)
     if (!currentChatId) {
-      console.log('loadMessages: no chatId provided')
       return
     }
 
     if (showLoading) {
-      console.log('loadMessages: setting loading to true')
       setLoading(true)
     }
     setError(null)
 
     try {
-      console.log('loadMessages: calling messageService.getMessages')
       const result = await messageService.getMessages(currentChatId)
-      console.log('loadMessages: result received:', result)
       
       if (result.success) {
-        const transformedMessages = result.messages.map(msg => 
-          messageService.transformMessage(msg, user?.id)
-        )
-        console.log('loadMessages: transformed messages:', transformedMessages)
+        const transformedMessages = result.messages.map(msg => {
+          const transformed = messageService.transformMessage(msg, user?.id)
+          const displayInfo = messageService.getDisplayText({
+            text: msg.originalText,
+            translations: msg.translations
+          }, user?.nativeLanguage || 'en')
+          
+          return {
+            ...transformed,
+            text: displayInfo.text,
+            originalText: displayInfo.originalText,
+            isTranslated: displayInfo.isTranslated
+          }
+        })
         setMessages(transformedMessages)
         setHasMore(result.hasMore)
         
         // Auto-scroll to bottom after messages are loaded (only on initial load)
         if (showLoading) {
-          console.log('loadMessages: scheduling scroll to bottom after loading')
           setTimeout(() => {
-            console.log('loadMessages: executing scroll to bottom')
             scrollToBottom()
-          }, 100) // Delay to ensure DOM is updated
+          }, 100)
         }
       } else {
-        console.log('loadMessages: result not successful:', result.error)
         setError(result.error)
       }
     } catch (err) {
-      console.error('loadMessages: error occurred:', err)
       setError('Failed to load messages')
     } finally {
       if (showLoading) {
-        console.log('loadMessages: setting loading to false')
         setLoading(false)
       }
     }
@@ -87,16 +94,27 @@ export const useMessages = (chatId) => {
       const result = await messageService.getMessages(chatId, Math.ceil(messages.length / 50) + 1, 50)
       
       if (result.success && result.messages.length > 0) {
-        const transformedMessages = result.messages.map(msg => 
-          messageService.transformMessage(msg, user?.id)
-        )
+        const transformedMessages = result.messages.map(msg => {
+          const transformed = messageService.transformMessage(msg, user?.id)
+          const displayInfo = messageService.getDisplayText({
+            text: msg.originalText,
+            translations: msg.translations
+          }, user?.nativeLanguage || 'en')
+          
+          return {
+            ...transformed,
+            text: displayInfo.text,
+            originalText: displayInfo.originalText,
+            isTranslated: displayInfo.isTranslated
+          }
+        })
         
         // Prepend older messages to the beginning
         setMessages(prev => [...transformedMessages, ...prev])
         setHasMore(result.hasMore)
       }
     } catch (err) {
-      console.error('Error loading more messages:', err)
+      setError('Failed to load more messages')
     } finally {
       isLoadingMoreRef.current = false
     }
@@ -134,12 +152,27 @@ export const useMessages = (chatId) => {
       
       if (result.success) {
         // Replace temp message with real message
-        const realMessage = messageService.transformMessage(result.message, user?.id)
+        const transformed = messageService.transformMessage(result.message, user?.id)
+        const displayInfo = messageService.getDisplayText({
+          text: result.message.originalText,
+          translations: result.message.translations
+        }, user?.nativeLanguage || 'en')
+        
+        const realMessage = {
+          ...transformed,
+          text: displayInfo.text,
+          originalText: displayInfo.originalText,
+          isTranslated: displayInfo.isTranslated
+        }
+        
         setMessages(prev => 
           prev.map(msg => 
             msg.id === tempMessage.id ? realMessage : msg
           )
         )
+        
+        // Update chat list with the sent message
+        updateChatWithNewMessageRef.current(chatId, result.message)
       } else {
         // Remove temp message and show error
         setMessages(prev => prev.filter(msg => msg.id !== tempMessage.id))
@@ -157,76 +190,79 @@ export const useMessages = (chatId) => {
 
   // Handle new message from socket
   const handleNewMessage = useCallback((messageData) => {
+    // Check if this message is for the current chat
+    if (messageData.chat !== chatId) {
+      return
+    }
+    
+    // Ignore messages from the current user (they're already shown optimistically)
+    if (messageData.sender && messageData.sender._id === user?.id) {
+      return
+    }
+    
+    // Transform the message using the message service
     const transformedMessage = messageService.transformMessage(messageData, user?.id)
+    
+    // Get display text with translation for the current user's language
+    const displayInfo = messageService.getDisplayText({
+      text: messageData.originalText,
+      translations: messageData.translations
+    }, user?.nativeLanguage || 'en')
+    
+    // Update the message with translated text
+    const messageWithTranslation = {
+      ...transformedMessage,
+      text: displayInfo.text,
+      originalText: displayInfo.originalText,
+      isTranslated: displayInfo.isTranslated
+    }
     
     setMessages(prev => {
       // Check if message already exists (avoid duplicates)
-      const exists = prev.some(msg => msg.id === transformedMessage.id)
-      if (exists) return prev
+      const exists = prev.some(msg => msg.id === messageWithTranslation.id)
+      if (exists) {
+        return prev
+      }
+      
+      // Update chat list with new message info
+      updateChatWithNewMessageRef.current(chatId, messageData)
       
       // Auto-scroll to bottom when receiving a new message
       setTimeout(() => {
         scrollToBottom()
       }, 50)
       
-      return [...prev, transformedMessage]
+      return [...prev, messageWithTranslation]
     })
-  }, [user?.id])
+  }, [chatId, user?.id, user?.nativeLanguage, scrollToBottom])
+
+  // Store the handleNewMessage function in ref to avoid dependency issues
+  handleNewMessageRef.current = handleNewMessage
 
   // Load messages when chatId changes
   useEffect(() => {
-    console.log('useMessages: chatId changed to:', chatId)
     if (chatId) {
-      console.log('useMessages: loading messages for chat:', chatId)
-      loadMessages(chatId, true) // Show loading on initial load
+      loadMessages(chatId, true)
+      markChatAsReadRef.current(chatId)
     }
-  }, [chatId, loadMessages])
+  }, [chatId])
 
-  // Auto-reload messages every second
+  // Socket connection management for real-time messages
   useEffect(() => {
     if (!chatId) return
 
-    console.log('useMessages: setting up auto-reload for chat:', chatId)
-    
-    // Set up interval to reload messages every second without showing loading
-    const intervalId = setInterval(() => {
-      console.log('useMessages: auto-reloading messages for chat:', chatId)
-      loadMessages(chatId, false) // Don't show loading for auto-reload
-    }, 1000) // Reload every 1000ms (1 second)
+    const socket = socketService.connect()
+    if (!socket) return
 
-    // Cleanup interval when component unmounts or chatId changes
+    socketService.joinChat(chatId)
+    socketService.onNewMessage(handleNewMessageRef.current)
+
     return () => {
-      console.log('useMessages: clearing auto-reload interval for chat:', chatId)
-      clearInterval(intervalId)
+      socketService.leaveChat(chatId)
+      socketService.offNewMessage(handleNewMessageRef.current)
     }
-  }, [chatId, loadMessages])
+  }, [chatId])
 
-  // Socket connection management (temporarily disabled for debugging)
-  // useEffect(() => {
-  //   if (!chatId) return
-
-  //   // Connect to socket
-  //   const socket = socketService.connect()
-  //   if (!socket) return
-
-  //   // Join chat room
-  //   socketService.joinChat(chatId)
-
-  //   // Listen for new messages
-  //   socketService.onNewMessage(handleNewMessage)
-
-  //   return () => {
-  //     socketService.leaveChat(chatId)
-  //     socketService.offNewMessage()
-  //   }
-  // }, [chatId, handleNewMessage])
-
-  // // Cleanup socket connection when component unmounts
-  // useEffect(() => {
-  //   return () => {
-  //     socketService.disconnect()
-  //   }
-  // }, [])
 
   return {
     messages,

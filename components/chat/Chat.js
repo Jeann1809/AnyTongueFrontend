@@ -39,9 +39,6 @@ export default function Chat() {
     loadMoreMessages()
   }
 
-  const getDisplayText = (message) => {
-    return messageService.getDisplayText(message, user?.nativeLanguage || 'en')
-  }
 
   if (!selectedChat) {
     return (
@@ -134,20 +131,12 @@ export default function Chat() {
                 </div>
               </div>
             ) : (
-              messages.map((message) => {
-                const displayInfo = getDisplayText(message)
-                return (
-                  <MessageBubble
-                    key={message.id}
-                    message={{
-                      ...message,
-                      text: displayInfo.text,
-                      originalText: displayInfo.originalText,
-                      isTranslated: displayInfo.isTranslated
-                    }}
-                  />
-                )
-              })
+              messages.map((message) => (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                />
+              ))
             )}
             
             {/* Scroll anchor for auto-scroll */}

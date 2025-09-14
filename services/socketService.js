@@ -5,34 +5,18 @@ class SocketService {
   constructor() {
     this.socket = null
     this.listeners = new Map()
+    this.messageCallbacks = new Set()
+    this.globalListenerSet = false
   }
 
   connect() {
-    if (this.socket?.connected) return this.socket
-
-    const token = getCurrentToken()
-    if (!token) {
-      console.error('No authentication token available for socket connection')
-      return null
+    if (this.socket?.connected) {
+      return this.socket
     }
 
     this.socket = io('http://localhost:8080', {
-      auth: {
-        token: token
-      },
-      transports: ['websocket', 'polling']
-    })
-
-    this.socket.on('connect', () => {
-      console.log('Connected to Socket.IO server')
-    })
-
-    this.socket.on('disconnect', (reason) => {
-      console.log('Disconnected from Socket.IO server:', reason)
-    })
-
-    this.socket.on('connect_error', (error) => {
-      console.error('Socket.IO connection error:', error)
+      transports: ['websocket', 'polling'],
+      autoConnect: true
     })
 
     return this.socket
@@ -49,34 +33,39 @@ class SocketService {
   joinChat(chatId) {
     if (this.socket?.connected) {
       this.socket.emit('join-chat', { chatId })
-      console.log(`Joined chat room: ${chatId}`)
     }
   }
 
   leaveChat(chatId) {
     if (this.socket?.connected) {
       this.socket.emit('leave-chat', { chatId })
-      console.log(`Left chat room: ${chatId}`)
     }
   }
 
   onNewMessage(callback) {
     if (this.socket) {
-      const listener = (message) => {
-        console.log('Received new message:', message)
-        callback(message)
-      }
+      this.messageCallbacks.add(callback)
       
-      this.socket.on('new-message', listener)
-      this.listeners.set('new-message', listener)
+      if (!this.globalListenerSet) {
+        this.socket.on('new-message', (message) => {
+          this.messageCallbacks.forEach(cb => {
+            try {
+              cb(message)
+            } catch (error) {
+              console.error('Error in message callback:', error)
+            }
+          })
+        })
+        this.globalListenerSet = true
+      }
     }
   }
 
-  offNewMessage() {
-    if (this.socket && this.listeners.has('new-message')) {
-      const listener = this.listeners.get('new-message')
-      this.socket.off('new-message', listener)
-      this.listeners.delete('new-message')
+  offNewMessage(callback = null) {
+    if (callback) {
+      this.messageCallbacks.delete(callback)
+    } else {
+      this.messageCallbacks.clear()
     }
   }
 
