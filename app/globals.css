@@ -10,54 +10,62 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --primary: 200 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 200 50% 90%;
+    --secondary-foreground: 200 100% 20%;
+    --muted: 200 30% 95%;
+    --muted-foreground: 200 50% 50%;
+    --accent: 200 80% 80%;
+    --accent-foreground: 200 100% 20%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 200 50% 85%;
+    --input: 200 30% 95%;
+    --ring: 200 100% 60%;
     --radius: 0.75rem;
     
-    /* Modern gradient colors */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    /* Blue light gradient colors */
+    --gradient-primary: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    --gradient-secondary: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%);
+    --gradient-success: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    --gradient-warm: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    --gradient-sky: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    --gradient-azure: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+    --gradient-ocean: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    --gradient-light-blue: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 200 20% 8%;
+    --foreground: 200 20% 95%;
+    --card: 200 20% 10%;
+    --card-foreground: 200 20% 95%;
+    --popover: 200 20% 10%;
+    --popover-foreground: 200 20% 95%;
+    --primary: 200 100% 70%;
+    --primary-foreground: 200 20% 10%;
+    --secondary: 200 30% 20%;
+    --secondary-foreground: 200 20% 95%;
+    --muted: 200 20% 15%;
+    --muted-foreground: 200 30% 70%;
+    --accent: 200 60% 30%;
+    --accent-foreground: 200 20% 95%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --border: 200 30% 25%;
+    --input: 200 20% 15%;
+    --ring: 200 100% 70%;
     
-    /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    /* Dark mode blue gradients */
+    --gradient-primary: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    --gradient-secondary: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%);
+    --gradient-success: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    --gradient-warm: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    --gradient-sky: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    --gradient-azure: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+    --gradient-ocean: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    --gradient-light-blue: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
   }
 }
 
@@ -137,14 +145,15 @@
   /* Modern button styles */
   .btn-modern {
     @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium transition-all duration-300;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #000000;
     color: white;
     border: none;
   }
   
   .btn-modern:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    background: #1a1a1a;
   }
   
   .btn-modern:active {
@@ -231,11 +240,19 @@
   padding-bottom: var(--spacing-unit);
 }
 
-/* Super fast scroll behavior */
-* {
-  scroll-behavior: auto !important;
+/* Blue light gradient classes */
+.gradient-sky {
+  background: var(--gradient-sky);
 }
 
-.overflow-y-auto {
-  scroll-behavior: auto !important;
+.gradient-azure {
+  background: var(--gradient-azure);
+}
+
+.gradient-ocean {
+  background: var(--gradient-ocean);
+}
+
+.gradient-light-blue {
+  background: var(--gradient-light-blue);
 }

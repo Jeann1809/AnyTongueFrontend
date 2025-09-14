@@ -307,7 +307,7 @@ export default function MainLayout({ children }) {
 
   return (
     <ChatContext.Provider value={contextValue}>
-      <div className="flex h-screen bg-background">
+      <div className="flex h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100 dark:from-blue-900/20 dark:via-sky-900/20 dark:to-blue-800/20">
         {/* Side Navigation - Narrow */}
         <SideNavbar />
         

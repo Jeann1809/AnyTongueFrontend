@@ -10,13 +10,13 @@ export default function MessageBubble({ message }) {
           ? 'bg-destructive text-destructive-foreground'
           : isOwn 
             ? 'bg-primary text-primary-foreground' 
-            : 'bg-muted text-muted-foreground'
+            : 'bg-muted text-black dark:text-gray-200'
       } ${isSending ? 'opacity-70' : ''}`}>
         {!isOwn && (
-          <p className="text-xs font-medium mb-1 opacity-75">{sender}</p>
+          <p className="text-sm font-medium mb-1 opacity-75 text-gray-700 dark:text-gray-300">{sender}</p>
         )}
         <div className="flex items-center space-x-2">
-          <p className="text-sm">{text}</p>
+          <p className="text-base">{text}</p>
           {isSending && (
             <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
           )}
@@ -25,7 +25,9 @@ export default function MessageBubble({ message }) {
         {/* Show original text if message is translated */}
         {isTranslated && originalText && originalText !== text && (
           <div>
-            <p className="text-xs opacity-50 italic">
+            <p className={`text-sm opacity-50 italic ${
+              isOwn ? '' : 'text-gray-600 dark:text-gray-400'
+            }`}>
               {originalText}
             </p>
           </div>
@@ -36,7 +38,7 @@ export default function MessageBubble({ message }) {
             ? 'text-destructive-foreground/70'
             : isOwn 
               ? 'text-primary-foreground/70' 
-              : 'text-muted-foreground/70'
+              : 'text-gray-600 dark:text-gray-400'
         }`}>
           {timestamp}
         </p>

@@ -24,27 +24,24 @@ export default function ChatListSidebar() {
   )
 
   return (
-    <div className="w-80 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-r border-border/50 flex flex-col shadow-modern">
+    <div className="w-80 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-900 dark:to-sky-900 border-r border-blue-200/50 dark:border-blue-700/50 flex flex-col shadow-modern">
       {/* Header */}
-      <div className="p-6 border-b border-border/30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
+      <div className="p-6 border-b border-blue-200/30 dark:border-blue-700/30 bg-blue-50/80 dark:bg-blue-900/80 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center">
-              <span className="text-white font-bold text-sm">💬</span>
-            </div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent">Chats</h2>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-sky-600 dark:from-blue-400 dark:to-sky-400 bg-clip-text text-transparent">Chats</h2>
           </div>
           <CreateChatButton />
         </div>
         
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 h-5 w-5" />
           <Input
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 pr-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 transition-all duration-300"
+            className="pl-12 pr-4 py-3 rounded-xl border-2 border-blue-200 dark:border-blue-700 bg-blue-50/90 dark:bg-blue-800/90 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 transition-all duration-300"
           />
         </div>
       </div>
@@ -72,8 +69,8 @@ export default function ChatListSidebar() {
                 key={chat.id}
                 className={`group cursor-pointer transition-all duration-300 hover-lift animate-slide-up ${
                   selectedChat?.id === chat.id 
-                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-700' 
-                    : 'bg-white/70 dark:bg-slate-800/70 border border-slate-200/50 dark:border-slate-700/50'
+                    ? 'bg-gradient-to-r from-blue-100 to-sky-100 dark:from-blue-800/30 dark:to-sky-800/30 border-2 border-blue-300 dark:border-blue-600' 
+                    : 'bg-blue-50/70 dark:bg-blue-800/70 border border-blue-200/50 dark:border-blue-700/50'
                 } rounded-xl p-4 hover:shadow-modern`}
                 onClick={() => setSelectedChat(chat)}
                 style={{ animationDelay: `${index * 50}ms` }}
