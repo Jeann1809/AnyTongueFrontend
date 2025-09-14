@@ -265,10 +265,21 @@ export default function MainLayout({ children }) {
     const socket = socketService.connect()
     
     if (socket) {
-      socketService.onNewMessage(handleGlobalSocketMessage)
+      // Wait for connection before setting up listener
+      const setupGlobalListener = () => {
+        if (socket.connected) {
+          socketService.onNewMessage(handleGlobalSocketMessage)
+        } else {
+          socket.on('connect', () => {
+            socketService.onNewMessage(handleGlobalSocketMessage)
+          })
+        }
+      }
+
+      setupGlobalListener()
       
       return () => {
-        socketService.offNewMessage()
+        socketService.offNewMessage(handleGlobalSocketMessage)
       }
     }
   }, [user, handleGlobalSocketMessage])
