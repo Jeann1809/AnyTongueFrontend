@@ -56,6 +56,7 @@ export const useMessages = (chatId) => {
             translations: msg.translations
           }, user?.nativeLanguage || 'en')
           
+          
           return {
             ...transformed,
             text: displayInfo.text,
