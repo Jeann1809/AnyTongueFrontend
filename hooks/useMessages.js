@@ -27,10 +27,18 @@ export const useMessages = (chatId) => {
     markChatAsReadRef.current = markChatAsRead
   }, [updateChatWithNewMessage, markChatAsRead])
 
-  // Scroll to bottom function
+  // Scroll to bottom function - super fast
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+      // Get the messages container (parent element)
+      const messagesContainer = messagesEndRef.current.closest('.overflow-y-auto')
+      if (messagesContainer) {
+        // Instantly scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight
+      } else {
+        // Fallback to scrollIntoView
+        messagesEndRef.current.scrollIntoView({ behavior: 'auto' })
+      }
     }
   }, [])
 
@@ -71,7 +79,7 @@ export const useMessages = (chatId) => {
         if (showLoading) {
           setTimeout(() => {
             scrollToBottom()
-          }, 100)
+          }, 10)
         }
       } else {
         setError(result.error)
@@ -146,7 +154,7 @@ export const useMessages = (chatId) => {
     // Auto-scroll to bottom when sending a message
     setTimeout(() => {
       scrollToBottom()
-    }, 50)
+    }, 5)
 
     try {
       const result = await messageService.sendMessage(chatId, text.trim())
@@ -231,7 +239,7 @@ export const useMessages = (chatId) => {
       // Auto-scroll to bottom when receiving a new message
       setTimeout(() => {
         scrollToBottom()
-      }, 50)
+      }, 5)
       
       return [...prev, messageWithTranslation]
     })

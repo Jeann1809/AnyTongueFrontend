@@ -230,3 +230,12 @@
   padding-top: var(--spacing-unit);
   padding-bottom: var(--spacing-unit);
 }
+
+/* Super fast scroll behavior */
+* {
+  scroll-behavior: auto !important;
+}
+
+.overflow-y-auto {
+  scroll-behavior: auto !important;
+}
