@@ -7,6 +7,8 @@ import ChatListSidebar from '@/components/layout/ChatListSidebar'
 import { chatAPI, isAuthenticated, getCurrentToken } from '@/lib/api'
 import messageService from '@/services/messageService'
 import socketService from '@/services/socketService'
+import { SettingsProvider } from '@/lib/settingsContext'
+import notificationService from '@/lib/notificationService'
 
 // Create context for managing chat state
 const ChatContext = createContext()
@@ -131,7 +133,13 @@ export default function MainLayout({ children }) {
   // Global socket message handler for chat list updates
   const handleGlobalSocketMessage = useCallback((messageData) => {
     updateChatWithNewMessage(messageData.chat, messageData)
-  }, [])
+    
+    // Send notification if message is not from current user
+    if (messageData.sender && messageData.sender._id !== user?._id) {
+      const chatName = chats.find(c => c.id === messageData.chat._id)?.name || 'Unknown Chat'
+      notificationService.notifyNewMessage(messageData, chatName)
+    }
+  }, [chats, user])
 
   // Load user chats from API
   const loadUserChats = async (userId) => {
@@ -306,19 +314,21 @@ export default function MainLayout({ children }) {
   }
 
   return (
-    <ChatContext.Provider value={contextValue}>
-      <div className="flex h-screen bg-background">
-        {/* Side Navigation - Narrow */}
-        <SideNavbar />
-        
-        {/* Chat List Sidebar - Medium Width */}
-        <ChatListSidebar />
-        
-        {/* Main Content Area */}
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
-      </div>
-    </ChatContext.Provider>
+    <SettingsProvider>
+      <ChatContext.Provider value={contextValue}>
+        <div className="flex h-screen bg-background">
+          {/* Side Navigation - Narrow */}
+          <SideNavbar />
+          
+          {/* Chat List Sidebar - Medium Width */}
+          <ChatListSidebar />
+          
+          {/* Main Content Area */}
+          <main className="flex-1 flex flex-col">
+            {children}
+          </main>
+        </div>
+      </ChatContext.Provider>
+    </SettingsProvider>
   )
 }

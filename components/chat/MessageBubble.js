@@ -1,7 +1,13 @@
 'use client'
 
+import { useSettings } from '@/lib/settingsContext'
+
 export default function MessageBubble({ message }) {
   const { sender, text, timestamp, isOwn, isSending, isError, translations, originalText, isTranslated } = message
+  const { getSetting } = useSettings()
+  
+  const showTimestamps = getSetting('chatPrefs', 'showTimestamps')
+  const showReadReceipts = getSetting('chatPrefs', 'showReadReceipts')
 
   return (
     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -31,15 +37,24 @@ export default function MessageBubble({ message }) {
           </div>
         )}
         
-        <p className={`text-xs mt-1 ${
-          isError
-            ? 'text-destructive-foreground/70'
-            : isOwn 
-              ? 'text-primary-foreground/70' 
-              : 'text-muted-foreground/70'
-        }`}>
-          {timestamp}
-        </p>
+        {showTimestamps && (
+          <p className={`text-xs mt-1 ${
+            isError
+              ? 'text-destructive-foreground/70'
+              : isOwn 
+                ? 'text-primary-foreground/70' 
+                : 'text-muted-foreground/70'
+          }`}>
+            {timestamp}
+          </p>
+        )}
+        
+        {/* Read receipt indicator */}
+        {isOwn && showReadReceipts && !isSending && !isError && (
+          <div className="flex justify-end mt-1">
+            <span className="text-xs opacity-50">✓✓</span>
+          </div>
+        )}
       </div>
     </div>
   )
