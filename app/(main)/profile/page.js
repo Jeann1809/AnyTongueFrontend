@@ -162,7 +162,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-4 sm:space-y-6">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-4 sm:space-y-6 min-h-full">
       {/* Header */}
       <div className="text-center animate-fade-in">
         <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 mb-4 sm:mb-6 relative">

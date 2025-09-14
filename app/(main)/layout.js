@@ -341,7 +341,7 @@ export default function MainLayout({ children }) {
         {!shouldHideConversations && showChatList && <ChatListSidebar />}
         
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
           {children}
         </main>
       </div>
