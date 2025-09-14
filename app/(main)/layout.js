@@ -167,9 +167,9 @@ export default function MainLayout({ children }) {
   }
 
   // Create a new chat with another user
-  const createChatWithUser = async (otherUserId) => {
+  const createChatWithUser = async (username) => {
     try {
-      const response = await chatAPI.createChat(otherUserId)
+      const response = await chatAPI.createChat(username)
       
       if (response.success && response.data) {
         // Transform and add to chats list
@@ -192,6 +192,28 @@ export default function MainLayout({ children }) {
       }
     } catch (error) {
       console.error('Error creating chat:', error)
+      throw error
+    }
+  }
+
+  // Delete a chat
+  const deleteChat = async (chatId) => {
+    try {
+      const response = await chatAPI.deleteChat(chatId)
+      
+      if (response.success) {
+        // Remove chat from chats list
+        setChats(prev => prev.filter(chat => chat.id !== chatId))
+        
+        // If the deleted chat was selected, clear selection
+        if (selectedChat?.id === chatId) {
+          setSelectedChat(null)
+        }
+        
+        return true
+      }
+    } catch (error) {
+      console.error('Error deleting chat:', error)
       throw error
     }
   }
@@ -263,6 +285,7 @@ export default function MainLayout({ children }) {
     setUser,
     loadUserChats,
     createChatWithUser,
+    deleteChat,
     isLoadingChats,
     updateChatWithNewMessage,
     markChatAsRead,

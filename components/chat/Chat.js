@@ -5,6 +5,7 @@ import { useChatContext } from '@/app/(main)/layout'
 import { useMessages } from '@/hooks/useMessages'
 import messageService from '@/services/messageService'
 import MessageBubble from './MessageBubble'
+import DeleteChatButton from './DeleteChatButton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send, ArrowLeft, MoreVertical } from 'lucide-react'
@@ -42,15 +43,18 @@ export default function Chat() {
 
   if (!selectedChat) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="mx-auto h-24 w-24 text-gray-400 mb-4">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20">
+        <div className="text-center animate-fade-in">
+          <div className="mx-auto h-32 w-32 mb-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
+            <div className="absolute inset-2 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-modern">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="h-16 w-16 text-blue-500">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Select a chat to start messaging</h3>
-          <p className="text-gray-500">Choose a conversation from the sidebar to begin chatting</p>
+          <h3 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent mb-3">Select a chat to start messaging</h3>
+          <p className="text-slate-600 dark:text-slate-400 text-lg">Choose a conversation from the sidebar to begin chatting</p>
         </div>
       </div>
     )
@@ -59,51 +63,66 @@ export default function Chat() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-card">
-        <div className="flex items-center space-x-3">
+      <div className="flex items-center justify-between p-6 border-b border-border/30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-modern">
+        <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden w-10 h-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
             onClick={() => setSelectedChat(null)}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-400" />
           </Button>
-          <div>
-            <h1 className="text-lg font-semibold">{selectedChat.name}</h1>
-            <p className="text-sm text-muted-foreground">Online</p>
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 rounded-full gradient-primary flex items-center justify-center text-white font-bold text-lg">
+              {selectedChat.name.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200">{selectedChat.name}</h1>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Online</p>
+              </div>
+            </div>
           </div>
         </div>
-        <Button variant="ghost" size="icon">
-          <MoreVertical className="h-5 w-5" />
-        </Button>
+        <div className="flex items-center space-x-2">
+          <DeleteChatButton chatId={selectedChat.id} chatName={selectedChat.name} />
+          <Button variant="ghost" size="icon" className="w-10 h-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+            <MoreVertical className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+          </Button>
+        </div>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div className="p-3 bg-destructive/10 border-b border-destructive/20">
-          <p className="text-sm text-destructive text-center">{error}</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2 w-full"
-            onClick={() => setError(null)}
-          >
-            Dismiss
-          </Button>
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 animate-slide-up">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30"
+              onClick={() => setError(null)}
+            >
+              ✕
+            </Button>
+          </div>
         </div>
       )}
 
       {/* Messages */}
       <div 
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-slate-50/50 to-transparent dark:from-slate-900/50"
       >
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center text-gray-500">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-              <p>Loading messages...</p>
+            <div className="text-center text-slate-500">
+              <div className="w-8 h-8 rounded-full gradient-primary animate-spin flex items-center justify-center mx-auto mb-3">
+                <div className="w-4 h-4 bg-white rounded-full"></div>
+              </div>
+              <p className="font-medium">Loading messages...</p>
             </div>
           </div>
         ) : (
@@ -116,6 +135,7 @@ export default function Chat() {
                   size="sm"
                   onClick={handleLoadMore}
                   disabled={loading}
+                  className="px-6 py-2 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300"
                 >
                   Load More Messages
                 </Button>
@@ -125,17 +145,19 @@ export default function Chat() {
             {/* Messages List */}
             {messages.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <div className="text-center text-gray-500">
-                  <p>No messages yet</p>
+                <div className="text-center text-slate-500 animate-fade-in">
+                  <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                    <span className="text-3xl">💬</span>
+                  </div>
+                  <p className="text-lg font-medium mb-2">No messages yet</p>
                   <p className="text-sm">Start the conversation!</p>
                 </div>
               </div>
             ) : (
-              messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                />
+              messages.map((message, index) => (
+                <div key={message.id} className="animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
+                  <MessageBubble message={message} />
+                </div>
               ))
             )}
             
@@ -146,22 +168,23 @@ export default function Chat() {
       </div>
 
       {/* Message Input */}
-      <div className="border-t border-border p-4">
-        <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+      <div className="border-t border-border/30 p-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
+        <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
           <Input
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1"
+            className="flex-1 input-modern"
             disabled={sending}
           />
           <Button 
             type="submit" 
             size="icon" 
             disabled={!messageText.trim() || sending}
+            className="w-12 h-12 rounded-xl btn-modern"
           >
             {sending ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <Send className="h-5 w-5" />
             )}
