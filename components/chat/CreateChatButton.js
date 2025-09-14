@@ -41,7 +41,7 @@ export default function CreateChatButton() {
       <Button 
         size="icon" 
         variant="outline" 
-        className="h-8 w-8"
+        className="h-8 w-8 shadow-md hover:shadow-lg transition-shadow duration-200"
         onClick={() => setIsOpen(true)}
       >
         <Plus className="h-4 w-4" />
@@ -50,7 +50,7 @@ export default function CreateChatButton() {
       {/* Create Chat Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
+          <Card className="w-full max-w-md mx-4 shadow-2xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <div>
                 <CardTitle>Create New Chat</CardTitle>
@@ -62,6 +62,7 @@ export default function CreateChatButton() {
                 size="icon" 
                 variant="ghost" 
                 onClick={() => setIsOpen(false)}
+                className="shadow-md hover:shadow-lg transition-shadow duration-200"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -84,6 +85,7 @@ export default function CreateChatButton() {
                     onChange={(e) => setOtherUserId(e.target.value)}
                     placeholder="Enter the other user's ID"
                     disabled={isLoading}
+                    className="shadow-md focus:shadow-lg transition-shadow duration-200"
                   />
                   <p className="text-xs text-muted-foreground">
                     You'll need the other user's ID to start a chat
@@ -94,7 +96,7 @@ export default function CreateChatButton() {
                   <Button 
                     type="submit" 
                     disabled={isLoading || !otherUserId.trim()}
-                    className="flex-1"
+                    className="flex-1 shadow-md hover:shadow-lg transition-shadow duration-200"
                   >
                     {isLoading ? 'Creating...' : 'Create Chat'}
                   </Button>
@@ -103,6 +105,7 @@ export default function CreateChatButton() {
                     variant="outline" 
                     onClick={() => setIsOpen(false)}
                     disabled={isLoading}
+                    className="shadow-md hover:shadow-lg transition-shadow duration-200"
                   >
                     Cancel
                   </Button>

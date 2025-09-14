@@ -64,7 +64,7 @@ export default function Chat() {
       }}>
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
-        <div className="text-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-none rounded-2xl p-8 shadow-lg relative z-10">
+        <div className="text-center bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20 dark:border-gray-700/30 relative z-10">
           <div className="mx-auto h-24 w-24 text-gray-400 mb-4">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -87,7 +87,7 @@ export default function Chat() {
       {/* Dark overlay for better text readability */}
       <div className="absolute inset-0 bg-black/5 dark:bg-black/10 z-0"></div>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-white/60 dark:bg-gray-800/60 backdrop-blur-none relative z-10">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-lg border-b-white/20 dark:border-b-gray-700/30 relative z-10">
         <div className="flex items-center space-x-3">
           <Button
             variant="ghost"
@@ -125,7 +125,7 @@ export default function Chat() {
       {/* Messages */}
       <div 
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/20 dark:bg-gray-800/20 backdrop-blur-none relative z-10"
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/25 dark:bg-gray-800/25 backdrop-blur-sm relative z-10 shadow-inner"
       >
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -144,6 +144,7 @@ export default function Chat() {
                   size="sm"
                   onClick={handleLoadMore}
                   disabled={loading}
+                  className="shadow-md hover:shadow-lg transition-shadow duration-200 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm border-white/30 dark:border-gray-600/30"
                 >
                   Load More Messages
                 </Button>
@@ -174,20 +175,21 @@ export default function Chat() {
       </div>
 
       {/* Message Input */}
-      <div className="border-t border-border p-4 bg-white/40 dark:bg-gray-800/40 backdrop-blur-none relative z-10">
+      <div className="border-t border-border p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg border-t-white/20 dark:border-t-gray-700/30 relative z-10">
         <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
           <Input
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type a message..."
-            className="flex-1"
+            className="flex-1 shadow-md border-white/30 dark:border-gray-600/30 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm focus:shadow-lg transition-shadow duration-200"
             disabled={sending}
           />
           <Button 
             type="submit" 
             size="icon" 
             disabled={!messageText.trim() || sending}
+            className="shadow-lg hover:shadow-xl transition-shadow duration-200 bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm border border-white/30 dark:border-gray-600/30"
           >
             {sending ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

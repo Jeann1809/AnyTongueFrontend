@@ -297,8 +297,8 @@ export default function MainLayout({ children }) {
           {/* Side Navigation - Narrow */}
           <SideNavbar />
           
-          {/* Chat List Sidebar - Medium Width */}
-          <ChatListSidebar />
+          {/* Chat List Sidebar - Medium Width (hidden on profile/settings) */}
+          {!shouldHideConversations && <ChatListSidebar />}
           
           {/* Main Content Area */}
           <main className="flex-1 flex flex-col">

@@ -30,14 +30,14 @@ export default function SideNavbar() {
   }
 
   return (
-    <div className={`bg-card border-r border-border transition-all duration-300 ${
+    <div className={`bg-card border-r border-border shadow-lg transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-20'
     }`}>
       <div className="flex flex-col h-full">
         {/* Logo/Brand */}
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-center">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200">
               <span className="text-primary-foreground font-bold text-sm">AT</span>
             </div>
           </div>
@@ -54,10 +54,10 @@ export default function SideNavbar() {
                 <Button
                   variant={isActive ? 'default' : 'ghost'}
                   size="icon"
-                  className={`w-full h-12 ${
+                  className={`w-full h-12 shadow-md hover:shadow-lg transition-shadow duration-200 ${
                     isActive 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'hover:bg-accent'
+                      ? 'bg-primary text-primary-foreground shadow-blue-200 dark:shadow-blue-900/50' 
+                      : 'hover:bg-accent shadow-gray-200 dark:shadow-gray-800/50'
                   }`}
                   title={item.name}
                 >
@@ -73,7 +73,7 @@ export default function SideNavbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="w-full h-12 hover:bg-destructive hover:text-destructive-foreground"
+            className="w-full h-12 hover:bg-destructive hover:text-destructive-foreground shadow-md hover:shadow-lg transition-shadow duration-200 shadow-gray-200 dark:shadow-gray-800/50 hover:shadow-red-200 dark:hover:shadow-red-900/50"
             title="Logout"
             onClick={handleLogout}
           >

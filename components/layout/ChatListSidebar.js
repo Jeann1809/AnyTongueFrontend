@@ -24,7 +24,7 @@ export default function ChatListSidebar() {
   )
 
   return (
-    <div className="w-80 bg-card border-r border-border flex flex-col">
+    <div className="w-80 bg-card border-r border-border shadow-lg flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
@@ -39,7 +39,7 @@ export default function ChatListSidebar() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 shadow-md focus:shadow-lg transition-shadow duration-200"
           />
         </div>
       </div>
@@ -60,8 +60,8 @@ export default function ChatListSidebar() {
             {filteredChats.map((chat) => (
               <Card
                 key={chat.id}
-                className={`cursor-pointer transition-colors hover:bg-accent ${
-                  selectedChat?.id === chat.id ? 'bg-accent border-primary' : ''
+                className={`cursor-pointer transition-all duration-200 hover:bg-accent shadow-md hover:shadow-lg ${
+                  selectedChat?.id === chat.id ? 'bg-accent border-primary shadow-lg shadow-blue-200 dark:shadow-blue-900/50' : 'shadow-gray-200 dark:shadow-gray-800/50'
                 }`}
                 onClick={() => setSelectedChat(chat)}
               >

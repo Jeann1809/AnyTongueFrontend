@@ -11,12 +11,12 @@ export default function MessageBubble({ message }) {
 
   return (
     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ${
         isError
-          ? 'bg-destructive text-destructive-foreground'
+          ? 'bg-destructive text-destructive-foreground shadow-red-200 dark:shadow-red-900/50'
           : isOwn 
-            ? 'bg-primary text-primary-foreground' 
-            : 'bg-muted text-muted-foreground'
+            ? 'bg-primary text-primary-foreground shadow-blue-200 dark:shadow-blue-900/50' 
+            : 'bg-white/90 dark:bg-gray-700/90 text-gray-900 dark:text-gray-100 shadow-gray-200 dark:shadow-gray-800/50 border border-white/20 dark:border-gray-600/20'
       } ${isSending ? 'opacity-70' : ''}`}>
         {!isOwn && (
           <p className="text-xs font-medium mb-1 opacity-75">{sender}</p>

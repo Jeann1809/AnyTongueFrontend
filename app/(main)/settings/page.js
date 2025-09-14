@@ -22,7 +22,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Notifications */}
-        <Card>
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Bell className="h-5 w-5 mr-2" />
@@ -96,7 +96,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Privacy & Security */}
-        <Card>
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Shield className="h-5 w-5 mr-2" />
@@ -158,7 +158,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Appearance */}
-        <Card>
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Palette className="h-5 w-5 mr-2" />
@@ -229,7 +229,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Chat Preferences */}
-        <Card>
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="flex items-center">
               <MessageSquare className="h-5 w-5 mr-2" />
@@ -291,7 +291,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* User Profile */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 shadow-lg hover:shadow-xl transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="flex items-center">
               <User className="h-5 w-5 mr-2" />
@@ -329,7 +329,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="mt-4">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full shadow-md hover:shadow-lg transition-shadow duration-200">
                 Edit Profile
               </Button>
             </div>
