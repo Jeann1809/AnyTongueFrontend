@@ -56,6 +56,7 @@ export const useMessages = (chatId) => {
             translations: msg.translations
           }, user?.nativeLanguage || 'en')
           
+          
           return {
             ...transformed,
             text: displayInfo.text,
@@ -254,8 +255,21 @@ export const useMessages = (chatId) => {
     const socket = socketService.connect()
     if (!socket) return
 
-    socketService.joinChat(chatId)
-    socketService.onNewMessage(handleNewMessageRef.current)
+    // Wait for connection before joining chat
+    const setupSocket = () => {
+      if (socket.connected) {
+        socketService.joinChat(chatId)
+        socketService.onNewMessage(handleNewMessageRef.current)
+      } else {
+        // Wait for connection
+        socket.on('connect', () => {
+          socketService.joinChat(chatId)
+          socketService.onNewMessage(handleNewMessageRef.current)
+        })
+      }
+    }
+
+    setupSocket()
 
     return () => {
       socketService.leaveChat(chatId)

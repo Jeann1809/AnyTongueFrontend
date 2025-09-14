@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, createContext, useContext, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import SideNavbar from '@/components/layout/SideNavbar'
 import ChatListSidebar from '@/components/layout/ChatListSidebar'
 import { chatAPI, isAuthenticated, getCurrentToken } from '@/lib/api'
@@ -41,6 +41,7 @@ const formatMessageTimestamp = (timestamp) => {
 
 export default function MainLayout({ children }) {
   const router = useRouter()
+  const pathname = usePathname()
   const [selectedChat, setSelectedChat] = useState(null)
   const [user, setUser] = useState(null)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
@@ -48,40 +49,9 @@ export default function MainLayout({ children }) {
   const [isLoadingChats, setIsLoadingChats] = useState(false)
   const chatsLoadedRef = useRef(false)
 
-  const [messages, setMessages] = useState({
-    '1': [
-      { id: '1', sender: 'Maria Garcia', text: '¡Hola! ¿Cómo estás?', timestamp: '2 min ago', isOwn: false },
-      { id: '2', sender: 'You', text: '¡Hola María! Estoy bien, gracias. ¿Y tú?', timestamp: '1 min ago', isOwn: true },
-      { id: '3', sender: 'Maria Garcia', text: 'Muy bien también. ¿Quieres practicar español hoy?', timestamp: '1 min ago', isOwn: false }
-    ],
-    '2': [
-      { id: '1', sender: 'Jean Dubois', text: 'Bonjour! Comment allez-vous?', timestamp: '1 hour ago', isOwn: false },
-      { id: '2', sender: 'You', text: 'Bonjour Jean! Je vais bien, merci. Et vous?', timestamp: '1 hour ago', isOwn: true }
-    ],
-    '3': [
-      { id: '1', sender: 'Hans Mueller', text: 'Guten Tag! Wie geht es Ihnen?', timestamp: '3 hours ago', isOwn: false },
-      { id: '2', sender: 'You', text: 'Guten Tag Hans! Mir geht es gut, danke.', timestamp: '3 hours ago', isOwn: true }
-    ],
-    '4': [
-      { id: '1', sender: 'Admin', text: 'Welcome to our weekly practice session!', timestamp: '1 day ago', isOwn: false },
-      { id: '2', sender: 'Sarah', text: 'Excited to practice with everyone!', timestamp: '1 day ago', isOwn: false },
-      { id: '3', sender: 'You', text: 'Looking forward to it!', timestamp: '1 day ago', isOwn: true }
-    ]
-  })
+  // Check if we should hide the conversations sidebar
+  const shouldHideConversations = pathname === '/profile' || pathname === '/settings'
 
-  const addMessage = (chatId, message) => {
-    setMessages(prev => ({
-      ...prev,
-      [chatId]: [...(prev[chatId] || []), message]
-    }))
-  }
-
-  const setChatMessages = (chatId, messages) => {
-    setMessages(prev => ({
-      ...prev,
-      [chatId]: messages
-    }))
-  }
 
   // Update chat list when a new message arrives
   const updateChatWithNewMessage = (chatId, message) => {
@@ -273,10 +243,21 @@ export default function MainLayout({ children }) {
     const socket = socketService.connect()
     
     if (socket) {
-      socketService.onNewMessage(handleGlobalSocketMessage)
+      // Wait for connection before setting up listener
+      const setupGlobalListener = () => {
+        if (socket.connected) {
+          socketService.onNewMessage(handleGlobalSocketMessage)
+        } else {
+          socket.on('connect', () => {
+            socketService.onNewMessage(handleGlobalSocketMessage)
+          })
+        }
+      }
+
+      setupGlobalListener()
       
       return () => {
-        socketService.offNewMessage()
+        socketService.offNewMessage(handleGlobalSocketMessage)
       }
     }
   }, [user, handleGlobalSocketMessage])
@@ -286,10 +267,6 @@ export default function MainLayout({ children }) {
     setSelectedChat,
     chats,
     setChats,
-    messages,
-    setMessages,
-    addMessage,
-    setChatMessages,
     user,
     setUser,
     loadUserChats,
